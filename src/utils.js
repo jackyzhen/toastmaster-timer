@@ -9,6 +9,14 @@ const formatElapsed = elapsed => {
 const padString = (str, padTo, pad) =>
   pad.repeat(str.length >= padTo ? 0 : padTo - str.length) + str;
 
+const formatTime = elapsed => {
+  const time = new Date(elapsed);
+  const mins = time.getUTCMinutes().toString();
+  const secs = padString(time.getUTCSeconds().toString(), 2, "0");
+  return `${mins}:${secs}`;
+};
+
 export default {
-  formatElapsed
+  formatElapsed,
+  formatTime
 };

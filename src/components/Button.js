@@ -5,7 +5,7 @@ import Touchable from "./Touchable";
 
 export default function Button(props) {
   return (
-    <Touchable {...props} style={[styles.center, props.style]}>
+    <Touchable {...props} style={[styles.container, props.style]}>
       <View style={styles.center}>
         <View style={props.buttonStyle}>{props.icon}</View>
         <Text style={props.titleStyle}>{props.title.toUpperCase()}</Text>
@@ -15,6 +15,11 @@ export default function Button(props) {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    justifyContent: "flex-start",
+    paddingLeft: 30
+  },
   center: {
     flexDirection: "row",
     alignItems: "center",

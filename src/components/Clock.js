@@ -8,6 +8,7 @@ export const STATES = {
   YELLOW: "YELLOW",
   RED: "RED"
 };
+
 export default class Clock extends PureComponent {
   static defaultProps = {
     elapsed: 0
@@ -41,7 +42,8 @@ export default class Clock extends PureComponent {
 const styles = StyleSheet.create({
   container: {
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    flex: 1
   },
   normal: {
     backgroundColor: "#A9B2B1"
@@ -58,6 +60,7 @@ const styles = StyleSheet.create({
   elapsed: {
     fontFamily: "Gotham",
     fontSize: 60,
-    fontWeight: "bold"
+    fontWeight: "bold",
+    color: "#313131"
   }
 });

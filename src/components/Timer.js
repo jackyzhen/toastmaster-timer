@@ -1,9 +1,9 @@
 import React, { PureComponent } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Utils from "../utils";
-import Button from "./Button";
+import { View, StyleSheet } from "react-native";
+import Buttons from "./Buttons";
 import Clock, { STATES } from "./Clock";
+import Times from "./Times";
+import TimePicker from "./TimePicker";
 
 const SEC = 1000;
 const MIN = SEC * 60;
@@ -18,13 +18,16 @@ export default class Timer extends PureComponent {
     timerState: STATES.NORMAL,
     green: SEC * 5,
     yellow: SEC * 10,
-    red: SEC * 15
+    red: SEC * 15,
+    isModalVisible: false
   };
 
   state = this.initialState;
 
   _handleReset = () => {
-    const { timerId } = this.state;
+    const { timerId, hasStarted } = this.state;
+    if (!hasStarted) return;
+
     clearInterval(timerId);
     this.setState(this.initialState);
   };
@@ -57,12 +60,6 @@ export default class Timer extends PureComponent {
     });
   };
 
-  _getButtonTitle = () => {
-    const { hasStarted, isRunning } = this.state;
-    if (!hasStarted) return "Start";
-    return isRunning ? "Pause" : "Resume";
-  };
-
   _getTimerState = elapsed => {
     const { green, yellow, red } = this.state;
     if (elapsed < green) {
@@ -77,47 +74,52 @@ export default class Timer extends PureComponent {
     return STATES.RED;
   };
 
+  _handleGreen = () => {};
+  _handleYellow = () => {};
+  _handleRed = () => {};
+
+  _setModalVisible = () => {
+    const { isModalVisible } = this.state;
+    this.setState({ isModalVisible: !isModalVisible });
+  };
+
   render() {
-    const { hasStarted, elapsed, timerState } = this.state;
+    const {
+      hasStarted,
+      isRunning,
+      elapsed,
+      timerState,
+      green,
+      yellow,
+      red,
+      isModalVisible
+    } = this.state;
     return (
-      <View>
-        <View>
-          <Button
-            title={this._getButtonTitle()}
-            titleStyle={styles.buttonText}
-            onPress={this._handleTimer}
-            buttonStyle={styles.button}
-            icon={
-              <MaterialIcons name="access-time" size={30} style={styles.icon} />
-            }
-          />
-        </View>
-        {hasStarted && (
-          <View>
-            <Button
-              title="reset"
-              titleStyle={styles.buttonText}
-              onPress={this._handleReset}
-              buttonStyle={styles.button}
-              icon={
-                <MaterialIcons name="refresh" size={30} style={styles.icon} />
-              }
-            />
-          </View>
-        )}
+      <View style={styles.container}>
         <Clock elapsed={elapsed} state={timerState} />
+        <Times
+          green={green}
+          yellow={yellow}
+          red={red}
+          onTap={this._setModalVisible}
+          onChangeGreen={this._handleGreen}
+          onChangeYellow={this._handleYellow}
+          onChangeRed={this._handleRed}
+        />
+        <Buttons
+          hasStarted={hasStarted}
+          isRunning={isRunning}
+          handleTimer={this._handleTimer}
+          handleReset={this._handleReset}
+        />
+        <TimePicker isVisible={isModalVisible} toggle={this._setModalVisible} />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  button: {
-    borderRadius: 18,
-    backgroundColor: "#fff"
-  },
-  buttonText: {
-    fontFamily: "Gotham",
-    fontSize: 30
+  container: {
+    flex: 1
   }
 });
