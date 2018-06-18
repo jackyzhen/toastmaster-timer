@@ -4,6 +4,7 @@ import Buttons from "./Buttons";
 import Clock, { STATES } from "./Clock";
 import Times from "./Times";
 import TimePicker from "./TimePicker";
+import Utils from "../utils";
 
 const SEC = 1000;
 const MIN = SEC * 60;
@@ -16,20 +17,28 @@ export default class Timer extends PureComponent {
     start: 0,
     timerId: 0,
     timerState: STATES.NORMAL,
-    green: SEC * 5,
-    yellow: SEC * 10,
-    red: SEC * 15,
-    isModalVisible: false
+    GREEN: SEC * 5,
+    YELLOW: SEC * 10,
+    RED: SEC * 15,
+    isModalVisible: false,
+    modalSec: "00",
+    modalMin: "00",
+    modalState: STATES.GREEN
   };
 
   state = this.initialState;
 
   _handleReset = () => {
-    const { timerId, hasStarted } = this.state;
+    const { timerId, hasStarted, GREEN, YELLOW, RED } = this.state;
     if (!hasStarted) return;
 
     clearInterval(timerId);
-    this.setState(this.initialState);
+    this.setState({
+      ...this.initialState,
+      GREEN,
+      YELLOW,
+      RED
+    });
   };
 
   _handleTimer = () => {
@@ -61,26 +70,52 @@ export default class Timer extends PureComponent {
   };
 
   _getTimerState = elapsed => {
-    const { green, yellow, red } = this.state;
-    if (elapsed < green) {
+    const { GREEN, YELLOW, RED } = this.state;
+    if (elapsed < GREEN) {
       return STATES.NORMAL;
     }
-    if (elapsed > green && elapsed < yellow) {
+    if (elapsed > GREEN && elapsed < YELLOW) {
       return STATES.GREEN;
     }
-    if (elapsed > yellow && elapsed < red) {
+    if (elapsed > YELLOW && elapsed < RED) {
       return STATES.YELLOW;
     }
     return STATES.RED;
   };
 
-  _handleGreen = () => {};
-  _handleYellow = () => {};
-  _handleRed = () => {};
+  _setModalVisible = colour => () => {
+    const { isModalVisible, GREEN, YELLOW, RED } = this.state;
+    let mins, secs;
+    switch (colour) {
+      case STATES.GREEN:
+        ({ mins, secs } = Utils.getMinAndSec(GREEN));
+        break;
+      case STATES.YELLOW:
+        ({ mins, secs } = Utils.getMinAndSec(YELLOW));
+        break;
+      case STATES.RED:
+        ({ mins, secs } = Utils.getMinAndSec(RED));
+        break;
+    }
+    this.setState({
+      isModalVisible: !isModalVisible,
+      modalMin: mins,
+      modalSec: secs,
+      modalState: colour
+    });
+  };
 
-  _setModalVisible = () => {
-    const { isModalVisible } = this.state;
-    this.setState({ isModalVisible: !isModalVisible });
+  _hideModal = () => {
+    this.setState({ isModalVisible: false });
+  };
+
+  _updateTime = (colour, min, sec) => {
+    console.log(colour, min, sec);
+    const { modalMin, modalSec } = this.state;
+    const newMin = min || modalMin;
+    const newSec = sec || modalSec;
+    const newDuration = Utils.getElapsedFromMinAndSec(newMin, newSec);
+    this.setState({ [colour]: newDuration, isModalVisible: false });
   };
 
   render() {
@@ -89,22 +124,22 @@ export default class Timer extends PureComponent {
       isRunning,
       elapsed,
       timerState,
-      green,
-      yellow,
-      red,
-      isModalVisible
+      GREEN,
+      YELLOW,
+      RED,
+      isModalVisible,
+      modalState,
+      modalSec,
+      modalMin
     } = this.state;
     return (
       <View style={styles.container}>
         <Clock elapsed={elapsed} state={timerState} />
         <Times
-          green={green}
-          yellow={yellow}
-          red={red}
+          GREEN={GREEN}
+          YELLOW={YELLOW}
+          RED={RED}
           onTap={this._setModalVisible}
-          onChangeGreen={this._handleGreen}
-          onChangeYellow={this._handleYellow}
-          onChangeRed={this._handleRed}
         />
         <Buttons
           hasStarted={hasStarted}
@@ -112,7 +147,14 @@ export default class Timer extends PureComponent {
           handleTimer={this._handleTimer}
           handleReset={this._handleReset}
         />
-        <TimePicker isVisible={isModalVisible} toggle={this._setModalVisible} />
+        <TimePicker
+          sec={modalSec}
+          min={modalMin}
+          isVisible={isModalVisible}
+          colourState={modalState}
+          toggle={this._hideModal}
+          handleConfirm={this._updateTime}
+        />
       </View>
     );
   }

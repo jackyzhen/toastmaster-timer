@@ -1,44 +1,41 @@
 import React, { PureComponent } from "react";
 import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import Utils from "../utils";
 import { STATES } from "./Clock";
+import Utils from "../utils";
 
 export default class Times extends PureComponent {
-  _getTimeDisplay = (duration, state, handler, onTap) => {
-    let colour;
+  _getTimeDisplay = (duration, state) => {
+    const { onTap } = this.props;
+    let colourStyle;
+
     switch (state) {
       case STATES.GREEN:
-        colour = styles.green;
+        colourStyle = styles.green;
         break;
       case STATES.YELLOW:
-        colour = styles.yellow;
+        colourStyle = styles.yellow;
         break;
       case STATES.RED:
-        colour = styles.red;
+        colourStyle = styles.red;
         break;
     }
-    console.log(colour);
+
     return (
-      <TouchableOpacity style={[styles.time, colour]} onPress={onTap}>
+      <TouchableOpacity
+        style={[styles.time, colourStyle]}
+        onPress={onTap(state)}
+      >
         <Text style={styles.text}>{Utils.formatTime(duration)}</Text>
       </TouchableOpacity>
     );
   };
   render() {
-    const {
-      green,
-      yellow,
-      red,
-      onChangeGreen,
-      onChangeYellow,
-      onChangeRed,
-      onTap
-    } = this.props;
+    const { GREEN, YELLOW, RED } = this.props;
     return (
       <View style={styles.container}>
-        {this._getTimeDisplay(green, STATES.GREEN, onChangeGreen, onTap)}
-        {this._getTimeDisplay(yellow, STATES.YELLOW, onChangeYellow, onTap)}
-        {this._getTimeDisplay(red, STATES.RED, onChangeRed, onTap)}
+        {this._getTimeDisplay(GREEN, STATES.GREEN)}
+        {this._getTimeDisplay(YELLOW, STATES.YELLOW)}
+        {this._getTimeDisplay(RED, STATES.RED)}
       </View>
     );
   }
