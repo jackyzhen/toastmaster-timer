@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: "Gotham",
     fontWeight: "bold",
-    fontSize: 40,
+    fontSize: 35,
     color: "#313131"
   },
   time: {

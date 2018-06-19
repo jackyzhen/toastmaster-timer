@@ -10,9 +10,8 @@ export default class Timer extends PureComponent {
   };
 
   _getButtonTitle = () => {
-    const { hasStarted, isRunning } = this.props;
-    if (!hasStarted) return "Start";
-    return isRunning ? "Pause" : "Resume";
+    const { isRunning } = this.props;
+    return isRunning ? "Pause" : "Start";
   };
 
   render() {
