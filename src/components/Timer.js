@@ -13,13 +13,15 @@ export default class Timer extends PureComponent {
   initialState = {
     hasStarted: false,
     isRunning: false,
+
     elapsed: 0,
     start: 0,
     timerId: 0,
-    timerState: STATES.NORMAL,
     GREEN: SEC * 5,
     YELLOW: SEC * 10,
     RED: SEC * 15,
+    timerState: STATES.NORMAL,
+
     isModalVisible: false,
     modalSec: "00",
     modalMin: "00",
@@ -109,13 +111,33 @@ export default class Timer extends PureComponent {
     this.setState({ isModalVisible: false });
   };
 
-  _adjustedTimes(green, yellow, red) {
+  _adjustedTimes(colour, green, yellow, red) {
     let [newGreen, newYellow, newRed] = [green, yellow, red];
-    if (newGreen >= newYellow) {
-      newYellow = newGreen + MIN;
-    }
-    if (newYellow >= newRed) {
-      newRed = newYellow + MIN;
+    switch (colour) {
+      case STATES.GREEN:
+        if (newGreen >= newYellow) {
+          newYellow = newGreen + MIN;
+        }
+        if (newYellow >= newRed) {
+          newRed = newYellow + MIN;
+        }
+        break;
+      case STATES.YELLOW:
+        if (newGreen >= newYellow) {
+          newGreen = newYellow - MIN <= 0 ? 0 : newYellow - MIN;
+        }
+        if (newYellow >= newRed) {
+          newRed = newYellow + MIN;
+        }
+        break;
+      case STATES.RED:
+        if (newYellow >= newRed) {
+          newYellow = newRed - MIN <= 0 ? 0 : newRed - MIN;
+        }
+        if (newGreen >= newYellow) {
+          newGreen = newYellow - MIN <= 0 ? 0 : newYellow - MIN;
+        }
+        break;
     }
     return [newGreen, newYellow, newRed];
   }
@@ -138,6 +160,7 @@ export default class Timer extends PureComponent {
         break;
     }
     [newGreen, newYellow, newRed] = this._adjustedTimes(
+      colour,
       newGreen,
       newYellow,
       newRed
