@@ -88,13 +88,13 @@ export default class Timer extends PureComponent {
     let mins, secs;
     switch (colour) {
       case STATES.GREEN:
-        ({ mins, secs } = Utils.getMinAndSec(GREEN));
+        [mins, secs] = Utils.getMinAndSec(GREEN);
         break;
       case STATES.YELLOW:
-        ({ mins, secs } = Utils.getMinAndSec(YELLOW));
+        [mins, secs] = Utils.getMinAndSec(YELLOW);
         break;
       case STATES.RED:
-        ({ mins, secs } = Utils.getMinAndSec(RED));
+        [mins, secs] = Utils.getMinAndSec(RED);
         break;
     }
     this.setState({
@@ -109,12 +109,45 @@ export default class Timer extends PureComponent {
     this.setState({ isModalVisible: false });
   };
 
+  _adjustedTimes(green, yellow, red) {
+    let [newGreen, newYellow, newRed] = [green, yellow, red];
+    if (newGreen >= newYellow) {
+      newYellow = newGreen + MIN;
+    }
+    if (newYellow >= newRed) {
+      newRed = newYellow + MIN;
+    }
+    return [newGreen, newYellow, newRed];
+  }
+
   _updateTime = (colour, min, sec) => {
-    const { modalMin, modalSec } = this.state;
+    const { modalMin, modalSec, GREEN, YELLOW, RED } = this.state;
     const newMin = min || modalMin;
     const newSec = sec || modalSec;
     const newDuration = Utils.getElapsedFromMinAndSec(newMin, newSec);
-    this.setState({ [colour]: newDuration, isModalVisible: false });
+    let [newGreen, newYellow, newRed] = [GREEN, YELLOW, RED];
+    switch (colour) {
+      case STATES.GREEN:
+        newGreen = newDuration;
+        break;
+      case STATES.YELLOW:
+        newYellow = newDuration;
+        break;
+      case STATES.RED:
+        newRed = newDuration;
+        break;
+    }
+    [newGreen, newYellow, newRed] = this._adjustedTimes(
+      newGreen,
+      newYellow,
+      newRed
+    );
+    this.setState({
+      GREEN: newGreen,
+      YELLOW: newYellow,
+      RED: newRed,
+      isModalVisible: false
+    });
   };
 
   render() {

@@ -20,7 +20,7 @@ const getMinAndSec = elapsed => {
   const time = new Date(elapsed);
   const mins = padString(time.getUTCMinutes().toString(), 2, "0");
   const secs = padString(time.getUTCSeconds().toString(), 2, "0");
-  return { mins, secs };
+  return [mins, secs];
 };
 
 const getElapsedFromMinAndSec = (min, sec) => {
