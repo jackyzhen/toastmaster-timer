@@ -24,6 +24,10 @@ export default class TimePicker extends PureComponent {
       .fill()
       .map((v, i) => ({ key: Utils.padString(`${i}`, 2, "0") }));
 
+  componentWillReceiveProps({ sec, min }) {
+    this.setState({ selectedSec: sec, selectedMin: min });
+  }
+
   _onSelectSecond = selectedSec => () => {
     this.setState({ selectedSec });
   };
