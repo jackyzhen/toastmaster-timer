@@ -7,7 +7,7 @@ Simple timer for timing toastmasters meetings. [Try it on Expo.](https://expo.io
 ## Build
 
 ```
-npm install exp --global
+npm i exp --global
 npm i
 expo start
 expo <android|ios>
