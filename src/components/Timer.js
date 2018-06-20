@@ -110,7 +110,6 @@ export default class Timer extends PureComponent {
   };
 
   _updateTime = (colour, min, sec) => {
-    console.log(colour, min, sec);
     const { modalMin, modalSec } = this.state;
     const newMin = min || modalMin;
     const newSec = sec || modalSec;
